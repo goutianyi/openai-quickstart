@@ -46,13 +46,29 @@ class TableContent(Content):
             if not isinstance(translation, str):
                 raise ValueError(f"Invalid translation type. Expected str, but got {type(translation)}")
 
-            LOG.debug(translation)
             # Convert the string to a list of lists
             table_data = [row.strip().split() for row in translation.strip().split('\n')]
-            LOG.debug(table_data)
-            # Create a DataFrame from the table_data
-            translated_df = pd.DataFrame(table_data[1:], columns=table_data[0])
-            LOG.debug(translated_df)
+
+            # Handle headers with parentheses if needed
+            if len(table_data[0]) != len(table_data[1]):
+                header = table_data[0]
+                combined_header = []
+                i = 0
+                while i < len(header):
+                    if i < len(header) - 1 and header[i+1].startswith('('):
+                        combined_header.append(f"{header[i]} {header[i+1]}")
+                        i += 2
+                    else:
+                        combined_header.append(header[i])
+                        i += 1
+                table_data[0] = combined_header
+
+            # Create DataFrame with the same structure as original
+            translated_df = pd.DataFrame(
+                table_data,  # data
+                columns=table_data[0],  # headers
+            )
+
             self.translation = translated_df
             self.status = status
         except Exception as e:
