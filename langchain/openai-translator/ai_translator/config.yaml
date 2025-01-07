@@ -1,0 +1,7 @@
+model_name: "glm-4-flash"
+api_key: "my key"
+base_url: "https://open.bigmodel.cn/api/paas/v4/"
+input_file: "tests/test.pdf"
+output_file_format: "markdown"
+source_language: "English"
+target_language: "Chinese"
