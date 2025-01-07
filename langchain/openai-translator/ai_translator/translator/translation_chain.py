@@ -5,12 +5,13 @@ from utils import LOG
 from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
 
 class TranslationChain:
-    def __init__(self, model_name: str = "gpt-3.5-turbo", verbose: bool = True):
+    def __init__(self, model_name: str = "gpt-4o-mini", verbose: bool = True):
         
         # 翻译任务指令始终由 System 角色承担
         template = (
             """You are a translation expert, proficient in various languages. \n
-            Translates {source_language} to {target_language}."""
+            Translates {source_language} to {target_language}. \n
+            Use style {style} for translation."""
         )
         system_message_prompt = SystemMessagePromptTemplate.from_template(template)
 
@@ -28,13 +29,14 @@ class TranslationChain:
 
         self.chain = LLMChain(llm=chat, prompt=chat_prompt_template, verbose=verbose)
 
-    def run(self, text: str, source_language: str, target_language: str) -> (str, bool):
+    def run(self, text: str, source_language: str, target_language: str, style: str) -> (str, bool):
         result = ""
         try:
             result = self.chain.run({
                 "text": text,
                 "source_language": source_language,
                 "target_language": target_language,
+                "style": style,
             })
         except Exception as e:
             LOG.error(f"An error occurred during translation: {e}")
